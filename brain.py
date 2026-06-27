@@ -7,40 +7,16 @@ import os
 import subprocess
 import keyboard
 import sys
+from commands.system import handle_system
+from commands.apps import app_handle
+from commands.websites import web_handle
 
 def process_command(command): 
-    if "shutdown" in command or "shut" in command:
-        speak("Shutting down")
-        subprocess.run(["shutdown", "/s", "/t", "10"])
-    elif "open" in command:
-        found = False
-        for appname in apps: 
-            if appname in command:
-                found = True
-                speak(f"Opening {appname}")
-                subprocess.run(apps[appname], shell = True)
-        for webname in sites:
-            if webname in command:
-                found = True
-                speak(f"Opening {webname}")
-                subprocess.run(sites[webname], shell = True)
-        if not found :
-            speak("I didn't catch that")
-    elif "search" in command :
-        if "youtube" in command:
-            command = command.replace("search ", "")
-            command = command.replace(" on youtube", "")
-            command = command.strip()
-            speak(f"searching {command}")
-            command = command.replace(" ", "+")
-            
-            subprocess.run(f"start https://www.youtube.com/results?search_query={command}", shell = True)
-        elif "brave" in command:
-            command = command.replace("search ", "")
-            command = command.replace(" on brave", "")
-            command = command.strip()
-            speak(f"searching {command}")
-            command = command.replace(" ", "+")
-            subprocess.run(f"start https://search.brave.com/search?q={command}", shell = True)
+    if handle_system(command):
+        return
+    elif app_handle(command):
+        return
+    elif web_handle(command):
+        return
     else:
         speak("I didnt catch that")
